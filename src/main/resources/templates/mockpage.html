@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<script src="/jquery2.1.4.min.js"></script>
+<script src="/js/bootstrap.js"></script>
+<link rel="stylesheet" href="/css/bootstrap.css">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<div class="container">
+
+    <div class="bs-example" data-example-id="simple-table">
+        <table class="table" id="i_table">
+            <caption>Optional table caption.</caption>
+            <thead>
+            <tr>
+                <th>id</th>
+                <th>名称</th>
+                <th>JSON</th>
+                <th>操作</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+                <th scope="row">1</th>
+                <td><input type="text" class="form-control"></td>
+                <td>Otto</td>
+                <td>@mdo</td>
+            </tr>
+            <tr>
+                <th scope="row">2</th>
+                <td>Jacob</td>
+                <td>Thornton</td>
+                <td>@fat</td>
+            </tr>
+            <tr>
+                <th scope="row">3</th>
+                <td>Larry</td>
+                <td>the Bird</td>
+                <td>@twitter</td>
+            </tr>
+            </tbody>
+        </table>
+
+        <button type="button" class="btn btn-success" onclick="addRow()">增加</button>
+    </div>
+
+</div>
+
+
+</body>
+<script>
+    $(function () {
+        console.log(11111111111)
+        $.ajax({
+            url: "/mock/getAll",
+            type: "GET",
+            dataType: "json",
+            cache: false,
+            data: {},
+            success: function (data) {
+                if (data != null) {
+                    console.log('data:' + data)
+                    $.each(data, function (index, obj) {
+                        console.log('xxb:' + index)
+                        var html = '<tr>\n' +
+                            '                <th scope="row">' + obj.id + '</th>\n' +
+                            '                <td id="table_name">' + obj.name + '</td>\n' +
+                            '                <td id="table_json">' + obj.jsonData + '</td>\n' +
+                            '                <td><button type="button" class="btn btn-primary" onclick="editRow(this)">修改</button> <button type="button" class="btn  btn-danger">删除</button>\n' +
+                            '            </tr>';
+                        $("#i_table").append(html)
+
+                    })
+
+                    var jsonObj = JSON.stringify(data);
+                    console.log("xxa:" + jsonObj)
+                }
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+                alert("error:" + jqXHR.responseText);
+            }
+        });
+    });
+
+    function editRow(obj) {
+        console.log($(obj).html())
+        console.log($(obj).parent().html())
+        var id = $(obj).parent().prev().prev().prev();
+        var name = $(obj).parent().prev().prev();
+        var json = $(obj).parent().prev();
+        console.log('id:' + id.html() + ",name:" + name.html() + ",json:" + json.html());
+
+
+        $.ajax({
+            url: "/mock/update",
+            type: "POST",
+            dataType: "json",
+            cache: false,
+            data: {
+                id: id,
+                name: name,
+                jsonData: json
+            },
+            success: function (data) {
+                if (data.state) {
+                    $(obj).parent().prev().prev().prev().html(data.methodResult) ; //id
+                    $(obj).parent().prev().prev().html(name);
+                    $(obj).parent().prev().html(json);
+                }else {
+                    alert(data.message)
+                }
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+                alert("error:" + jqXHR.responseText);
+            }
+        });
+    }
+    
+    
+    function insert(obj){
+        var id = $(obj).parent().prev().prev().prev().children('.input');
+        var name = $(obj).parent().prev().prev().children('input').val();
+        var json = $(obj).parent().prev().children('input').val();
+        console.log('id:' + id.val() + ",name:" + name + ",json:" + json);
+
+        $.ajax({
+            url: "/mock/insert",
+            type: "POST",
+            dataType: "json",
+            cache: false,
+            data: {
+                name: name,
+                jsonData: json
+            },
+            success: function (data) {
+                if (data.state) {
+                    $(obj).parent().prev().prev().prev().html(data.methodResult) ; //id
+                    $(obj).parent().prev().prev().html(name);
+                    $(obj).parent().prev().html(json);
+                }else {
+                    alert(data.message)
+                }
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+                alert("error:" + jqXHR.responseText);
+            }
+        });
+
+    }
+
+    function addRow() {
+        var html = '<tr>\n' +
+            '                <th scope="row"></th>\n' +
+            '                <td><input type="text" class="form-control"></td>\n' +
+            '                <td><input type="text" class="form-control"></td>\n' +
+            '                <td><button type="button" class="btn btn-success" onclick="insert(this)">保存</button> <button type="button" class="btn  btn-danger">删除</button>\n' +
+            '            </tr>';
+
+        $("#i_table").append(html)
+    }
+
+
+</script>
+</html>

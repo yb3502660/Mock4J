@@ -1,0 +1,22 @@
+
+server:
+  port: 11127
+
+spring:
+  application:
+    name: mock-4j
+  datasource:
+    type: com.alibaba.druid.pool.DruidDataSource
+    driver-class-name: org.gjt.mm.mysql.Driver
+    url: jdbc:mysql://8.129.88.114:3306/Mock?useUnicode=true&characterEncoding=utf-8&useSSL=false
+    username: root
+    password: 864665226
+    druid:
+      validation-query: select 1
+
+mybatis:
+  mapperLocations: classpath:mapper/*.xml
+  type-aliases-package: com.bingo
+#logging:
+#  level:
+#    com.atguigu.springcloud.dao: debug
