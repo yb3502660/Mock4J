@@ -85,14 +85,31 @@
     });
 
     function editRow(obj) {
-        console.log($(obj).html())
+        console.log("111a"+$(obj).html())
         console.log($(obj).parent().html())
         var id = $(obj).parent().prev().prev().prev();
         var name = $(obj).parent().prev().prev();
         var json = $(obj).parent().prev();
         console.log('id:' + id.html() + ",name:" + name.html() + ",json:" + json.html());
+        
+        
+
+        //控制重复提交
+        $(obj).html("保存");
+        $(obj).attr("onclick", "");
+        $(obj).bind("click", saveEdit);
+        
 
 
+    }
+
+
+    function saveEdit() {
+        var obj = $(this);
+        console.log("save:" + ($(this).parent().html()))
+        var id = $(obj).parent().prev().prev().prev().val();
+        var name = $(obj).parent().prev().prev().val();
+        var json = $(obj).parent().prev().val();
         $.ajax({
             url: "/mock/update",
             type: "POST",
@@ -105,10 +122,13 @@
             },
             success: function (data) {
                 if (data.state) {
-                    $(obj).parent().prev().prev().prev().html(data.methodResult) ; //id
+                    $(obj).parent().prev().prev().prev().html(data.methodResult); //id
                     $(obj).parent().prev().prev().html(name);
                     $(obj).parent().prev().html(json);
-                }else {
+                    $(obj).html("修改");
+                    $(obj).attr("onclick", "");
+                    $(obj).attr("onclick", editRow);
+                } else {
                     alert(data.message)
                 }
             },
@@ -117,9 +137,9 @@
             }
         });
     }
-    
-    
-    function insert(obj){
+
+
+    function insert(obj) {
         var id = $(obj).parent().prev().prev().prev().children('.input');
         var name = $(obj).parent().prev().prev().children('input').val();
         var json = $(obj).parent().prev().children('input').val();
@@ -136,10 +156,10 @@
             },
             success: function (data) {
                 if (data.state) {
-                    $(obj).parent().prev().prev().prev().html(data.methodResult) ; //id
+                    $(obj).parent().prev().prev().prev().html(data.methodResult); //id
                     $(obj).parent().prev().prev().html(name);
                     $(obj).parent().prev().html(json);
-                }else {
+                } else {
                     alert(data.message)
                 }
             },
