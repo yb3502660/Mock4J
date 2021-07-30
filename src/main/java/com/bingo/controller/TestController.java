@@ -1,8 +1,13 @@
 package com.bingo.controller;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 import com.bingo.dao.TMockTextDao;
 import com.bingo.entity.ResultInfo;
 import com.bingo.entity.TMockText;
+import com.bingo.entity.track.DyscshaGetTrackResponseDto;
+import com.bingo.entity.track.DyscshaGetTrackableItemsEventsResponseDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
@@ -52,6 +57,21 @@ public class TestController {
     public String getJson(@PathVariable("id") Integer id){
         TMockText tMockText = mockTextDao.selectByPrimaryKey(id);
         return tMockText.getJsonData();
+    }
+    
+    @RequestMapping("/getJson/{id}/{code}")
+    public String getJson4DYSCSHA(@PathVariable("id") Integer id,@PathVariable("code")String code){
+        TMockText tMockText = mockTextDao.selectByPrimaryKey(id);
+        String jsonData = tMockText.getJsonData();
+        JSONObject jsonObject = JSONObject.parseObject(jsonData);
+
+        JSONArray jsonArray = jsonObject.getJSONArray("tracking_results");
+        String result= jsonArray.getString(0);
+
+        DyscshaGetTrackResponseDto dyscshaGetTrackResponseDto=(DyscshaGetTrackResponseDto)JSONObject.parseObject(result,DyscshaGetTrackResponseDto.class);
+        dyscshaGetTrackResponseDto.setTracking_id(code);
+        dyscshaGetTrackResponseDto.getTrackable_items().get(0).setArticle_id(code);
+        return JSON.toJSONString(dyscshaGetTrackResponseDto);
     }
     
     @PostMapping("/delete/{id}")
@@ -115,4 +135,6 @@ public class TestController {
         return "uri:" + requestURI + "\n" +
                 "url:" + url;
     }
+    
+    
 }
